@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-Powered Healthcare Test Case Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .bg-healthcare {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .test-case-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .test-case-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6); /* Darker overlay */
+      animation: fadeIn 0.3s ease-out;
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto; /* Adjusted margin */
+      padding: 30px; /* More padding */
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 450px; /* Slightly wider */
+      border-radius: 12px; /* More rounded */
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #3b82f6; /* Blue-600 */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Sign In Modal -->
+<div id="signInModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="signInTitle" aria-hidden="true">
+  <div class="modal-content" role="document">
+    <button type="button" class="close float-right text-2xl font-bold cursor-pointer" aria-label="Close sign in dialog" id="closeSignInBtn">&times;</button>
+    <h2 id="signInTitle" class="text-3xl font-bold mb-6 text-center text-gray-800">Welcome Back!</h2>
+    <form id="signInForm">
+      <div class="mb-4">
+        <label for="usernameInput" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+        <input type="text" id="usernameInput" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required placeholder="e.g., user1 or admin" />
+      </div>
+      <div class="mb-6">
+        <label for="passwordInput" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <input type="password" id="passwordInput" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required placeholder="e.g., password1 or admin123" />
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300 text-lg font-semibold">Sign In</button>
+    </form>
+    <p class="text-center text-sm text-gray-500 mt-4">Use 'user1'/'password1' or 'admin'/'admin123' to sign in.</p>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="bg-healthcare text-white shadow-lg">
+  <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold mb-2">AI-Powered Healthcare Test Case Generator</h1>
+      <p class="text-lg">Transform healthcare software requirements into compliant, traceable test cases</p>
+    </div>
+    <div class="flex items-center space-x-4">
+      <button id="getStartedBtn" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md transition duration-300 text-white font-semibold">Get Started</button>
+      <span id="userDisplay" class="hidden text-lg font-medium"></span>
+      <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition duration-300 hidden">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Application -->
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <!-- Requirements Input Section -->
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Enter Healthcare Software Requirements</h2>
+    <form id="requirementsForm">
+      <div class="mb-4">
+        <label for="systemType" class="block text-sm font-medium text-gray-700 mb-2">System Type</label>
+        <select id="systemType" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" disabled>
+          <option value="">Select system type</option>
+          <option value="Electronic Health Records (EHR)">Electronic Health Records (EHR)</option>
+          <option value="Patient Monitoring System">Patient Monitoring System</option>
+          <option value="Telemedicine Platform">Telemedicine Platform</option>
+          <option value="Pharmacy Management System">Pharmacy Management System</option>
+          <option value="Lab Information System">Lab Information System</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label for="requirementText" class="block text-sm font-medium text-gray-700 mb-2">Requirement Description</label>
+        <textarea id="requirementText" rows="6" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Describe the healthcare software requirement in detail..." disabled></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Compliance Standards</label>
+        <div class="flex flex-wrap gap-2">
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox" value="HIPAA" disabled />
+            <span class="ml-2">HIPAA</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox" value="FDA 21 CFR Part 11" disabled />
+            <span class="ml-2">FDA 21 CFR Part 11</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox" value="GDPR" disabled />
+            <span class="ml-2">GDPR</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox" value="HL7" disabled />
+            <span class="ml-2">HL7</span>
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" disabled>Generate Test Cases</button>
+    </form>
+  </div>
+
+  <!-- AI Processing Indicator -->
+  <div id="processing" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden">
+    <div class="flex items-center justify-center">
+      <div class="spinner"></div>
+      <span class="ml-4 text-lg text-gray-700 font-medium">AI Processing requirements...</span>
+    </div>
+  </div>
+
+  <!-- Generated Test Cases Section -->
+  <div id="results" class="bg-white rounded-lg shadow-md p-6 hidden">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Generated Test Cases</h2>
+    <div class="mb-4 flex items-center">
+      <label for="exportFormat" class="block text-sm font-medium text-gray-700 mr-2">Export Format:</label>
+      <select id="exportFormat" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <option value="json">JSON</option>
+        <option value="csv">CSV</option>
+        <option value="xml">XML</option>
+      </select>
+      <button id="exportBtn" class="ml-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300">Export</button>
+    </div>
+    <div id="testCasesContainer" class="space-y-4"></div>
+  </div>
+
+  <!-- Enterprise Integrations -->
+  <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Enterprise Integrations</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="text-center">
+        <img src="https://img.icons8.com/color/96/000000/jira.png" alt="Jira" class="mx-auto mb-2 rounded-md w-16 h-16 object-contain" />
+        <p class="text-sm">Jira</p>
+        <span class="text-green-600 text-xs">Connected</span>
+      </div>
+      <div class="text-center">
+        <img src="https://img.icons8.com/color/96/000000/testrail.png" alt="TestRail" class="mx-auto mb-2 rounded-md w-16 h-16 object-contain" />
+        <p class="text-sm">TestRail</p>
+        <span class="text-green-600 text-xs">Connected</span>
+      </div>
+      <div class="text-center">
+        <img src="https://img.icons8.com/color/96/000000/security-checked.png" alt="HIPAA Audit" class="mx-auto mb-2 rounded-md w-16 h-16 object-contain" />
+        <p class="text-sm">HIPAA Audit</p>
+        <span class="text-green-600 text-xs">Connected</span>
+      </div>
+      <div class="text-center">
+        <img src="https://img.icons8.com/color/96/000000/github.png" alt="GitHub" class="mx-auto mb-2 rounded-md w-16 h-16 object-contain" />
+        <p class="text-sm">GitHub</p>
+        <span class="text-green-600 text-xs">Connected</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Traceability Matrix -->
+  <div id="traceability" class="bg-white rounded-lg shadow-md p-6 mt-8 hidden">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Requirements Traceability Matrix</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="px-4 py-2 text-left">Requirement ID</th>
+            <th class="px-4 py-2 text-left">Test Case ID</th>
+            <th class="px-4 py-2 text-left">Status</th>
+          </tr>
+        </thead>
+        <tbody id="traceabilityBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Global Variable to Store Generated Test Cases ---
+  let generatedTestCases = [];
+
+  // --- DOM Element References ---
+  const dom = {
+    signInModal: document.getElementById('signInModal'),
+    getStartedBtn: document.getElementById('getStartedBtn'),
+    logoutBtn: document.getElementById('logoutBtn'),
+    userDisplay: document.getElementById('userDisplay'),
+    signInForm: document.getElementById('signInForm'),
+    usernameInput: document.getElementById('usernameInput'),
+    passwordInput: document.getElementById('passwordInput'),
+    requirementsForm: document.getElementById('requirementsForm'),
+    systemType: document.getElementById('systemType'),
+    requirementText: document.getElementById('requirementText'),
+    complianceCheckboxes: document.querySelectorAll('input.form-checkbox'),
+    generateBtn: document.querySelector('#requirementsForm button[type="submit"]'),
+    processingIndicator: document.getElementById('processing'),
+    resultsSection: document.getElementById('results'),
+    testCasesContainer: document.getElementById('testCasesContainer'),
+    traceabilitySection: document.getElementById('traceability'),
+    traceabilityBody: document.getElementById('traceabilityBody'),
+    exportBtn: document.getElementById('exportBtn'),
+    exportFormat: document.getElementById('exportFormat')
+  };
+
+  // --- User Data (Frontend Mock) ---
+  const validUsers = [
+    { username: 'user1', password: 'password1' },
+    { username: 'admin', password: 'admin123' }
+  ];
+
+  // --- Modal Functions ---
+  function openSignInModal() {
+    dom.signInModal.style.display = 'block';
+    dom.signInModal.setAttribute('aria-hidden', 'false');
+    // Focus the first input for accessibility
+    setTimeout(() => dom.usernameInput.focus(), 0);
+  }
+
+  function closeSignInModal() {
+    dom.signInModal.style.display = 'none';
+    dom.signInModal.setAttribute('aria-hidden', 'true');
+    dom.signInForm.reset(); // Clear form fields on close
+    // Return focus to the opener for better UX
+    dom.getStartedBtn.focus();
+  }
+
+  // --- Form State Management ---
+  function enableForm(enabled) {
+    dom.systemType.disabled = !enabled;
+    dom.requirementText.disabled = !enabled;
+    dom.complianceCheckboxes.forEach(cb => cb.disabled = !enabled);
+    dom.generateBtn.disabled = !enabled;
+  }
+
+  function autofillForm(userRole) {
+    // Clear previous autofill/user input first
+    clearForm(); 
+
+    if (userRole === 'admin') {
+      dom.systemType.value = 'Electronic Health Records (EHR)';
+      dom.requirementText.value = 'The EHR system must securely store and retrieve patient medical records, ensuring compliance with HIPAA and FDA 21 CFR Part 11 regulations for data integrity and privacy. It should also support HL7 for interoperability.';
+      dom.complianceCheckboxes.forEach(cb => {
+        if (cb.value === 'HIPAA' || cb.value === 'FDA 21 CFR Part 11' || cb.value === 'HL7') {
+          cb.checked = true;
+        }
+      });
+    } else { // Default for 'user1' or any other user
+      dom.systemType.value = 'Patient Monitoring System';
+      dom.requirementText.value = 'The patient monitoring system should accurately record vital signs (heart rate, blood pressure, temperature) and alert medical staff to critical changes. Data must be securely transmitted and stored.';
+      dom.complianceCheckboxes.forEach(cb => {
+        if (cb.value === 'HIPAA') {
+          cb.checked = true;
+        }
+      });
+    }
+  }
+
+  function clearForm() {
+    dom.systemType.value = '';
+    dom.requirementText.value = '';
+    dom.complianceCheckboxes.forEach(cb => cb.checked = false);
+    dom.requirementsForm.reset(); // Resets all form fields
+  }
+
+  // --- Event Listeners ---
+  dom.getStartedBtn.addEventListener('click', openSignInModal);
+  // Close button inside modal (replaces inline onclick)
+  document.getElementById('closeSignInBtn').addEventListener('click', closeSignInModal);
+  // Close on outside click (backdrop)
+  window.addEventListener('click', (event) => {
+    if (event.target === dom.signInModal) {
+      closeSignInModal();
+    }
+  });
+  // Close on Escape key
+  window.addEventListener('keydown', (event) => {
+    if (dom.signInModal.style.display === 'block' && (event.key === 'Escape' || event.key === 'Esc')) {
+      closeSignInModal();
+    }
+  });
+
+  dom.logoutBtn.addEventListener('click', () => {
+    dom.userDisplay.textContent = '';
+    dom.userDisplay.classList.add('hidden');
+    dom.logoutBtn.classList.add('hidden');
+    dom.getStartedBtn.classList.remove('hidden');
+    enableForm(false);
+    clearForm();
+    dom.resultsSection.classList.add('hidden');
+    dom.traceabilitySection.classList.add('hidden');
+    generatedTestCases = []; // Clear generated test cases on logout
+    alert('You have been logged out.');
+  });
+
+  dom.signInForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = dom.usernameInput.value.trim();
+    const password = dom.passwordInput.value;
+
+    const user = validUsers.find(u => u.username === username && u.password === password);
+    if (user) {
+      dom.userDisplay.textContent = `Welcome, ${user.username}!`;
+      dom.userDisplay.classList.remove('hidden');
+      dom.logoutBtn.classList.remove('hidden');
+      dom.getStartedBtn.classList.add('hidden');
+      enableForm(true);
+      autofillForm(user.username); // Autofill based on username
+      closeSignInModal();
+      alert(`Successfully signed in as ${user.username}! Form autofilled with example requirements.`);
+    } else {
+      alert('Invalid username or password. Please try again.');
+    }
+  });
+
+  dom.requirementsForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const systemType = dom.systemType.value;
+    const requirementText = dom.requirementText.value.trim();
+    const complianceStandards = Array.from(dom.complianceCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+
+    if (!systemType || !requirementText) {
+      alert('Please select a system type and provide a requirement description.');
+      return;
+    }
+
+    dom.processingIndicator.classList.remove('hidden');
+    dom.resultsSection.classList.add('hidden');
+    dom.traceabilitySection.classList.add('hidden');
+
+    // Simulate AI processing delay
+    setTimeout(() => {
+      generateTestCases(systemType, requirementText, complianceStandards);
+    }, 2000);
+  });
+
+  dom.exportBtn.addEventListener('click', function() {
+    if (generatedTestCases.length === 0) {
+      alert('No test cases to export. Please generate test cases first.');
+      return;
+    }
+
+    const format = dom.exportFormat.value;
+    let fileContent = '';
+    let fileName = `test_cases.${format}`;
+    let mimeType = '';
+
+    switch (format) {
+      case 'json':
+        fileContent = JSON.stringify(generatedTestCases, null, 2);
+        mimeType = 'application/json';
+        break;
+      case 'csv':
+        // Basic CSV conversion (assumes flat structure, might need more complex logic for nested data)
+        const headers = ['ID', 'Title', 'Description', 'Steps', 'Expected Result', 'Compliance'];
+        const csvRows = [headers.join(',')];
+        generatedTestCases.forEach(tc => {
+          const steps = `"${tc.steps.join('; ').replace(/"/g, '""')}"`; // Handle commas and quotes in steps
+          const row = [
+            tc.id,
+            `"${tc.title.replace(/"/g, '""')}"`,
+            `"${tc.description.replace(/"/g, '""')}"`,
+            steps,
+            `"${tc.expected.replace(/"/g, '""')}"`,
+            tc.compliance
+          ];
+          csvRows.push(row.join(','));
+        });
+        fileContent = csvRows.join('\n');
+        mimeType = 'text/csv';
+        break;
+      case 'xml':
+        // Basic XML conversion
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<TestCases>\n';
+        generatedTestCases.forEach(tc => {
+          xml += `  <TestCase id="${tc.id}">\n`;
+          xml += `    <Title>${tc.title}</Title>\n`;
+          xml += `    <Description>${tc.description}</Description>\n`;
+          xml += `    <Steps>\n`;
+          tc.steps.forEach(step => {
+            xml += `      <Step>${step}</Step>\n`;
+          });
+          xml += `    </Steps>\n`;
+          xml += `    <ExpectedResult>${tc.expected}</ExpectedResult>\n`;
+          xml += `    <Compliance>${tc.compliance}</Compliance>\n`;
+          xml += `  </TestCase>\n`;
+        });
+        xml += '</TestCases>';
+        fileContent = xml;
+        mimeType = 'application/xml';
+        break;
+    }
+
+    const blob = new Blob([fileContent], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url); // Clean up the URL object
+  });
+
+  // --- Test Case Generation Logic (Frontend Mock) ---
+  function generateTestCases(systemType, requirementText, complianceStandards) {
+    dom.processingIndicator.classList.add('hidden');
+
+    // Store generated test cases globally
+    generatedTestCases = simulateAITestCaseGeneration(systemType, requirementText, complianceStandards);
+
+    displayTestCases(generatedTestCases);
+    dom.resultsSection.classList.remove('hidden');
+    dom.resultsSection.classList.add('fade-in'); // Apply fade-in animation
+
+    if (generatedTestCases.length > 0) {
+      generateTraceabilityMatrix(generatedTestCases);
+      dom.traceabilitySection.classList.remove('hidden');
+      dom.traceabilitySection.classList.add('fade-in'); // Apply fade-in animation
+    }
+  }
+
+  function simulateAITestCaseGeneration(systemType, requirementText, complianceStandards) {
+    const testCases = [];
+    let baseId = 1;
+
+    // Generic test case based on requirement text length or keywords
+    if (requirementText.length > 100 || requirementText.toLowerCase().includes('security')) {
+        testCases.push({
+            id: `TC-${String(baseId++).padStart(3, '0')}`,
+            title: 'Security and Data Privacy Verification',
+            description: 'Verify all data handling and access controls meet security protocols.',
+            steps: [
+                'Attempt unauthorized access',
+                'Verify data encryption at rest and in transit',
+                'Check audit logs for security events'
+            ],
+            expected: 'System prevents unauthorized access, data is encrypted, and security events are logged.',
+            compliance: complianceStandards.includes('HIPAA') || complianceStandards.includes('GDPR') ? 'Compliant' : 'Review Required'
+        });
+    }
+
+    if (systemType === 'Electronic Health Records (EHR)') {
+      testCases.push({
+        id: `TC-${String(baseId++).padStart(3, '0')}`,
+        title: 'Patient Record Creation and Retrieval',
+        description: 'Verify new patient records can be created and existing ones retrieved securely.',
+        steps: [
+          'Navigate to patient registration module',
+          'Enter new patient demographics and medical history',
+          'Save record',
+          'Search for newly created patient record',
+          'Verify all entered data is present and accurate'
+        ],
+        expected: 'Patient record created successfully and accurately retrieved.',
+        compliance: complianceStandards.includes('HIPAA') ? 'Compliant' : 'Not Compliant'
+      });
+      if (complianceStandards.includes('FDA 21 CFR Part 11')) {
+        testCases.push({
+          id: `TC-${String(baseId++).padStart(3, '0')}`,
+          title: 'Electronic Signature Verification (FDA 21 CFR Part 11)',
+          description: 'Ensure electronic signatures are properly captured and validated for record changes.',
+          steps: [
+            'Modify a patient record requiring electronic signature',
+            'Apply electronic signature',
+            'Verify signature integrity and audit trail'
+          ],
+          expected: 'Electronic signature is valid and change is recorded in an unalterable audit trail.',
+          compliance: 'Compliant'
+        });
+      }
+    } else if (systemType === 'Patient Monitoring System') {
+      testCases.push({
+        id: `TC-${String(baseId++).padStart(3, '0')}`,
+        title: 'Real-time Vital Signs Monitoring',
+        description: 'Test the system\'s ability to display and alert on real-time vital signs.',
+        steps: [
+          'Connect simulated patient monitor',
+          'Input various vital sign readings (normal, critical)',
+          'Verify real-time display accuracy',
+          'Verify critical alerts are triggered'
+        ],
+        expected: 'Vital signs displayed accurately and critical alerts function as expected.',
+        compliance: 'Compliant'
+      });
+    } else if (systemType === 'Telemedicine Platform') {
+        testCases.push({
+            id: `TC-${String(baseId++).padStart(3, '0')}`,
+            title: 'Secure Video Consultation Establishment',
+            description: 'Verify a secure video call can be initiated and maintained between patient and doctor.',
+            steps: [
+                'Patient logs in and requests consultation',
+                'Doctor accepts consultation',
+                'Verify video/audio connection is established securely',
+                'Verify call quality and stability'
+            ],
+            expected: 'Secure video consultation established with clear audio/video.',
+            compliance: complianceStandards.includes('HIPAA') ? 'Compliant' : 'Review Required'
+        });
+    } else if (systemType === 'Pharmacy Management System') {
+        testCases.push({
+            id: `TC-${String(baseId++).padStart(3, '0')}`,
+            title: 'Prescription Dispensing and Inventory Update',
+            description: 'Verify correct medication dispensing and automatic inventory update.',
+            steps: [
+                'Enter new prescription details',
+                'Dispense medication',
+                'Verify correct medication and dosage dispensed',
+                'Check inventory levels are updated correctly'
+            ],
+            expected: 'Prescription dispensed accurately and inventory updated.',
+            compliance: 'Compliant'
+        });
+    } else if (systemType === 'Lab Information System') {
+        testCases.push({
+            id: `TC-${String(baseId++).padStart(3, '0')}`,
+            title: 'Lab Result Entry and Reporting',
+            description: 'Verify lab results can be entered and reports generated.',
+            steps: [
+                'Enter patient lab results',
+                'Generate lab report',
+                'Verify report accuracy and format'
+            ],
+            expected: 'Lab results entered and reported accurately.',
+            compliance: complianceStandards.includes('HL7') ? 'Compliant' : 'Review Required'
+        });
+    }
+
+    // Fallback generic test case if no specific ones are generated
+    if (testCases.length === 0) {
+        testCases.push({
+            id: `TC-${String(baseId++).padStart(3, '0')}`,
+            title: 'Basic System Functionality Test',
+            description: 'Verify core functionality based on the provided requirement.',
+            steps: [
+                'Perform primary action described in requirement',
+                'Observe system response',
+                'Validate outcome against expected behavior'
+            ],
+            expected: 'System performs the described function as expected.',
+            compliance: 'Review Required'
+        });
+    }
+
+    return testCases;
+  }
+
+  function displayTestCases(testCases) {
+    dom.testCasesContainer.innerHTML = '';
+
+    if (testCases.length === 0) {
+        dom.testCasesContainer.innerHTML = '<p class="text-gray-600 italic">No specific test cases generated for this requirement. Try a different system type or more detailed description.</p>';
+        return;
+    }
+
+    testCases.forEach(tc => {
+      const testCaseElement = document.createElement('div');
+      testCaseElement.className = 'test-case-card bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500';
+      testCaseElement.innerHTML = `
+        <h3 class="font-semibold text-lg mb-2">${tc.id}: ${tc.title}</h3>
+        <p class="text-gray-700 mb-2">${tc.description}</p>
+        <h4 class="font-medium mb-1">Steps:</h4>
+        <ol class="list-decimal list-inside mb-2 text-sm">
+          ${tc.steps.map(step => `<li>${step}</li>`).join('')}
+        </ol>
+        <h4 class="font-medium mb-1">Expected Result:</h4>
+        <p class="text-sm mb-2">${tc.expected}</p>
+        <p class="text-xs"><strong>Compliance:</strong> 
+          <span class="${tc.compliance === 'Compliant' ? 'text-green-600' : tc.compliance === 'Not Compliant' ? 'text-red-600' : 'text-yellow-600'}">${tc.compliance}</span>
+        </p>
+      `;
+      dom.testCasesContainer.appendChild(testCaseElement);
+    });
+  }
+
+  function generateTraceabilityMatrix(testCases) {
+    dom.traceabilityBody.innerHTML = '';
+
+    testCases.forEach(tc => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="border px-4 py-2">REQ-${tc.id.split('-')[1]}</td>
+        <td class="border px-4 py-2">${tc.id}</td>
+        <td class="border px-4 py-2">
+          <select class="p-1 border border-gray-300 rounded">
+            <option value="Not Executed">Not Executed</option>
+            <option value="Passed">Passed</option>
+            <option value="Failed">Failed</option>
+          </select>
+        </td>
+      `;
+      dom.traceabilityBody.appendChild(row);
+    });
+  }
+
+  // --- Initial Setup ---
+  enableForm(false); // Disable form initially
+</script>
+</body>
+</html>
