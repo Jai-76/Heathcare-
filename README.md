@@ -46,7 +46,7 @@ A modern browser (Chrome, Firefox, Edge)
 
 Run Locally
 # Clone the repository
-git clone https://github.com/yourusername/healthtest-ai.git
+git clone https://healthcaresoftware.netlify.app/
 
 # Navigate to project
 cd healthtest-ai
@@ -75,3 +75,4 @@ This project is licensed under the MIT License – feel free to use and modify.
 
 For questions or collaborations, reach out at:
 📧 info@healthtestai.com
+
