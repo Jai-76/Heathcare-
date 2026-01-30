@@ -1,7 +1,7 @@
 // frontend/src/services/api.js
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 
 class HealthTestAPI {
   constructor() {
@@ -47,6 +47,29 @@ class HealthTestAPI {
       localStorage.setItem('refresh_token', response.data.refresh_token);
     }
     return response.data;
+  }
+
+  async signup(userData) {
+    const response = await this.client.post('/auth/signup', userData);
+    return response.data;
+  }
+
+  async getCurrentUser() {
+    const token = localStorage.getItem('access_token');
+    if (!token) throw new Error('No access token');
+    
+    const response = await this.client.get('/auth/me', {
+      headers: {
+        ...this.client.defaults.headers,
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+
+  async logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
   }
 
   async refreshToken() {
@@ -97,6 +120,23 @@ class HealthTestAPI {
 
   async exportToAzureDevOps(data) {
     const response = await this.client.post('/integrations/azuredevops/export', data);
+    return response.data;
+  }
+
+  // Chat with Gemini AI
+  async chatWithGemini(message) {
+    const token = localStorage.getItem('access_token');
+    if (!token) throw new Error('No access token');
+    
+    const response = await this.client.post('/chat', 
+      { message },
+      {
+        headers: {
+          ...this.client.defaults.headers,
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
     return response.data;
   }
 }

@@ -4,11 +4,11 @@ HealthTest AI is an intelligent solution that transforms healthcare software req
 
 This tool helps healthcare teams reduce manual effort, improve accuracy, and accelerate test coverage while ensuring compliance with international healthcare regulations.
 
-🚀 Features
+## 🚀 Features
 
 📌 AI-Powered Requirement Analysis – Converts natural language healthcare requirements into test cases.
 
-🛡️ Compliance Assurance – Auto-includes HIPAA, GDPR, FDA, and ISO standards in test cases.
+🛡️ Compliance Assurance – Auto-includes HIPAA, GDPR, FDA 21 CFR Part 11, and ISO standards in test cases.
 
 📊 Traceability Matrix – Maps requirements to generated test cases for full audit readiness.
 
@@ -17,6 +17,12 @@ This tool helps healthcare teams reduce manual effort, improve accuracy, and acc
 🔗 Seamless Integrations – Export or push test cases to Jira, TestRail, Azure DevOps.
 
 📥 Export Options – Download test cases in JSON, CSV, or PDF formats.
+
+🔐 User Authentication – Secure signup and login system with JWT tokens.
+
+🤖 Gemini AI Chat – Integrated chat functionality with Google's Gemini AI.
+
+🎨 Modern UI – React-based frontend with authentication pages.
 
 🏗️ Architecture Overview
 
@@ -41,17 +47,56 @@ Integrations – Export or push test cases to enterprise QA tools.
 Prerequisites
 
 Node.js (for local development)
-
+Python 3.8+ (for backend API)
 A modern browser (Chrome, Firefox, Edge)
 
-Run Locally
-# Clone the repository
-git clone https://healthcaresoftware.netlify.app/
+Backend Setup
 
-# Navigate to project
+# Navigate to backend directory
+cd backend
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+# Create a .env file in the backend directory with:
+# GEMINI_API_KEY=your_gemini_api_key_here
+# SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+# DATABASE_URL=sqlite:///./healthcare.db
+
+# The database will be created automatically when you first run the server
+
+# Start the FastAPI server
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+## 🔧 Implementation Status
+
+✅ **Backend Authentication System**
+- User registration and login endpoints
+- JWT token-based authentication
+- Password hashing with bcrypt
+- SQLite database with SQLAlchemy ORM
+
+✅ **Frontend Authentication UI**
+- React-based signup and login pages
+- Authentication state management
+- Protected routes and API calls
+
+✅ **Gemini AI Integration**
+- Chat endpoint for AI conversations
+- Configurable API key management
+
+⚠️ **Current Notes**
+- The authentication system is fully implemented but may require debugging for production deployment
+- Frontend uses inline Babel for JSX compilation (works in modern browsers)
+- Database tables are created automatically on first run
+
+Frontend Setup
+# In a new terminal, navigate to project root
 cd healthtest-ai
 
-# Open index.html in your browser
+# Open index.html in your browser (it will automatically load React components)
+# The frontend uses inline Babel compilation for JSX
 
 📌 Roadmap
 
