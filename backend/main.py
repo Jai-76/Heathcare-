@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 from database import get_db, User
 from auth import verify_password, get_password_hash, create_access_token, verify_token
-from typing import Optional
+from typing import Optional, List
 
 # Load environment variables
 load_dotenv()
@@ -48,6 +48,12 @@ class UserCreate(BaseModel):
     username: str
     password: str
     full_name: Optional[str] = None
+
+class TestCaseRequest(BaseModel):
+    requirement: str
+    systemType: str
+    priority: str
+    compliance: List[str]
 
 class UserResponse(BaseModel):
     id: int
@@ -185,6 +191,70 @@ def chat_with_gemini(request: ChatRequest, token: str):
             model = genai.GenerativeModel('gemini-pro')
             response = model.generate_content(request.message)
             return {'response': response.text}
+        except Exception as e:
+            return {'error': str(e)}
+    finally:
+        db.close()
+
+@app.post('/testcases/generate')
+def generate_test_cases(request: TestCaseRequest, token: str):
+    """Generate healthcare test cases using AI (requires authentication)"""
+    from database import SessionLocal
+    db = SessionLocal()
+    try:
+        # Verify user is authenticated
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        username = verify_token(token)
+        if username is None:
+            raise credentials_exception
+        user = db.query(User).filter(User.username == username).first()
+        if user is None:
+            raise credentials_exception
+        if not user.is_active:
+            raise HTTPException(status_code=400, detail="Inactive user")
+
+        # Check if Gemini API is configured
+        if not os.getenv('GEMINI_API_KEY'):
+            return {'error': 'GEMINI_API_KEY not configured. Please set your API key in the .env file.'}
+        
+        try:
+            # Create prompt for test case generation
+            prompt = f"""
+            Generate comprehensive test cases for the following healthcare requirement:
+
+            Requirement: {request.requirement}
+            System Type: {request.systemType}
+            Priority: {request.priority}
+            Compliance Requirements: {', '.join(request.compliance)}
+
+            Please generate 5-8 detailed test cases including:
+            1. Test case title
+            2. Description/scenario
+            3. Preconditions
+            4. Test steps
+            5. Expected results
+            6. Priority level
+            7. Compliance considerations
+
+            Format the response as a JSON array of test case objects with keys: title, description, preconditions, steps, expectedResults, priority, compliance.
+            """
+
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(prompt)
+            
+            # Parse the response as JSON
+            import json
+            try:
+                test_cases = json.loads(response.text)
+                return {'testCases': test_cases}
+            except json.JSONDecodeError:
+                # If JSON parsing fails, return the raw response
+                return {'testCases': [{'title': 'Generated Test Cases', 'description': response.text, 'priority': request.priority, 'compliance': request.compliance}]}
+                
         except Exception as e:
             return {'error': str(e)}
     finally:

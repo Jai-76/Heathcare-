@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LoginPage from './components/LoginPage.jsx';
 import SignupPage from './components/SignupPage.jsx';
+import TestCaseForm from './components/TestCaseForm.jsx';
 import api from './services/api.js';
 
 const App = () => {
@@ -101,24 +102,7 @@ const App = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8 text-center">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Welcome to Healthcare AI Test Case Generator
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Your AI-powered healthcare test case generation platform is ready to use!
-            </p>
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4 max-w-md mx-auto">
-              <h3 className="text-sm font-medium text-blue-800 mb-2">Features Available:</h3>
-              <ul className="text-sm text-blue-700 text-left space-y-1">
-                <li>• AI-powered requirement analysis</li>
-                <li>• Automated test case generation</li>
-                <li>• Compliance checking (HIPAA, GDPR, FDA)</li>
-                <li>• Chat with Gemini AI assistant</li>
-                <li>• Export to Jira, TestRail, Azure DevOps</li>
-              </ul>
-            </div>
-          </div>
+          <TestCaseForm />
         </div>
       </main>
     </div>
