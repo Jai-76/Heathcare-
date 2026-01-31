@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import LoginPage from './components/LoginPage.jsx';
 import SignupPage from './components/SignupPage.jsx';
 import TestCaseForm from './components/TestCaseForm.jsx';
+import DiseaseLookup from './components/DiseaseLookup.jsx';
 import api from './services/api.js';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentView, setCurrentView] = useState('login'); // 'login' or 'signup'
+  const [activeTab, setActiveTab] = useState('disease'); // 'disease' or 'testcase'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Healthcare AI</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Healthcare AI Assistant</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-700">
@@ -101,8 +103,37 @@ const App = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab('disease')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'disease'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Disease Information
+              </button>
+              <button
+                onClick={() => setActiveTab('testcase')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'testcase'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Test Case Generation
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        {/* Tab Content */}
         <div className="px-4 py-6 sm:px-0">
-          <TestCaseForm />
+          {activeTab === 'disease' ? <DiseaseLookup /> : <TestCaseForm />}
         </div>
       </main>
     </div>

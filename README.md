@@ -1,12 +1,16 @@
-🏥 HealthTest AI – AI-Powered Healthcare Test Case Generation
+🏥 HealthTest AI – AI-Powered Healthcare Assistant
 
-HealthTest AI is an intelligent solution that transforms healthcare software requirements into structured, compliant, and traceable test cases. It leverages AI, Natural Language Processing (NLP), and machine learning to analyze requirements, generate test steps, assign priorities, and embed compliance standards such as HIPAA, GDPR, FDA 21 CFR Part 11, and ISO 13485.
+HealthTest AI is an intelligent healthcare solution that provides comprehensive disease information, treatment solutions, and automated test case generation for healthcare software. It leverages AI, Natural Language Processing (NLP), and machine learning to analyze requirements, generate test cases, and provide medical information with compliance standards such as HIPAA, GDPR, FDA 21 CFR Part 11, and ISO 13485.
 
-This tool helps healthcare teams reduce manual effort, improve accuracy, and accelerate test coverage while ensuring compliance with international healthcare regulations.
+This tool helps healthcare professionals, developers, and QA teams with disease information, treatment guidance, and ensures software quality through automated test case generation.
 
 ## 🚀 Features
 
-📌 AI-Powered Requirement Analysis – Converts natural language healthcare requirements into test cases.
+🩺 Disease Information & Solutions – Get comprehensive information about diseases, symptoms, treatments, and prevention methods (currently using demo data).
+
+💊 Medical AI Assistant – Interactive chat with AI for healthcare-related queries and guidance (requires GEMINI_API_KEY configuration).
+
+📌 AI-Powered Requirement Analysis – Converts natural language healthcare requirements into test cases (requires GEMINI_API_KEY).
 
 🛡️ Compliance Assurance – Auto-includes HIPAA, GDPR, FDA 21 CFR Part 11, and ISO standards in test cases.
 
@@ -20,9 +24,9 @@ This tool helps healthcare teams reduce manual effort, improve accuracy, and acc
 
 🔐 User Authentication – Secure signup and login system with JWT tokens.
 
-🤖 Gemini AI Chat – Integrated chat functionality with Google's Gemini AI.
+🤖 Gemini AI Chat – Integrated chat functionality with Google's Gemini AI (requires API key).
 
-🎨 Modern UI – React-based frontend with authentication pages.
+🎨 Modern UI – React-based frontend with authentication and tabbed interface.
 
 🏗️ Architecture Overview
 
