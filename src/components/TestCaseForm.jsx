@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/api.js';
 
-const TestCaseForm = () => {
+const TestCaseForm = ({ darkMode = false }) => {
   const [formData, setFormData] = useState({
     requirement: '',
     systemType: 'EHR',
@@ -11,6 +11,14 @@ const TestCaseForm = () => {
   const [generatedTestCases, setGeneratedTestCases] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [savedCases, setSavedCases] = useState(() => {
+    const saved = localStorage.getItem('savedTestCases');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('savedTestCases', JSON.stringify(savedCases));
+  }, [savedCases]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -40,15 +48,42 @@ const TestCaseForm = () => {
     setError('');
 
     try {
-      // For now, simulate API call - replace with actual API endpoint
       const response = await api.generateTestCases(formData);
       setGeneratedTestCases(response.testCases);
+      
+      // Save to local storage
+      setSavedCases(prev => [...prev, {
+        id: Date.now(),
+        formData,
+        testCases: response.testCases,
+        createdAt: new Date().toLocaleString()
+      }]);
     } catch (err) {
       setError('Failed to generate test cases. Please try again.');
       console.error('Test case generation error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const exportTestCases = () => {
+    if (generatedTestCases.length === 0) return;
+    const data = {
+      requirement: formData.requirement,
+      systemType: formData.systemType,
+      priority: formData.priority,
+      compliance: formData.compliance,
+      testCases: generatedTestCases,
+      exportedAt: new Date().toLocaleString(),
+      source: 'Healthcare AI Assistant'
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `test-cases-${formData.systemType.toLowerCase()}-${Date.now()}.json`;
+    a.click();
   };
 
   return (

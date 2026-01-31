@@ -8,9 +8,13 @@ import api from './services/api.js';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [currentView, setCurrentView] = useState('login'); // 'login' or 'signup'
-  const [activeTab, setActiveTab] = useState('disease'); // 'disease' or 'testcase'
+  const [currentView, setCurrentView] = useState('login');
+  const [activeTab, setActiveTab] = useState('disease');
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     // Check if user is already logged in
@@ -21,6 +25,16 @@ const App = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    // Apply dark mode to document
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   const checkAuthStatus = async () => {
     try {
@@ -81,9 +95,9 @@ const App = () => {
 
   // Main authenticated application
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
+    <div className={`min-h-screen transition-smooth ${darkMode ? 'dark bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-indigo-50'}`}>
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+      <header className={`${darkMode ? 'bg-gray-800/80 border-gray-700' : 'bg-white/80 border-gray-200'} backdrop-blur-md border-b sticky top-0 z-40 shadow-sm transition-smooth`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
@@ -94,12 +108,19 @@ const App = () => {
             </div>
             <div className="flex items-center space-x-6">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-gray-900">Welcome back</p>
+                <p className={`text-sm font-medium ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>Welcome back</p>
                 <p className="text-xs text-indigo-600">{currentUser?.full_name || currentUser?.username || 'User'}</p>
               </div>
               <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={`p-2 rounded-lg transition-smooth ${darkMode ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                title={darkMode ? 'Light mode' : 'Dark mode'}
+              >
+                {darkMode ? '☀️' : '🌙'}
+              </button>
+              <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-smooth focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-smooth ${darkMode ? 'text-gray-200 bg-gray-700 hover:bg-gray-600' : 'text-gray-700 bg-gray-100 hover:bg-gray-200'}`}
               >
                 Logout
               </button>
@@ -112,13 +133,13 @@ const App = () => {
       <main className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
         {/* Tab Navigation */}
         <div className="mb-8 animate-slide-down">
-          <div className="flex space-x-2 bg-white rounded-xl p-1 shadow-sm inline-flex">
+          <div className={`flex space-x-2 rounded-xl p-1 shadow-sm inline-flex transition-smooth ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <button
               onClick={() => setActiveTab('disease')}
               className={`px-6 py-3 font-semibold rounded-lg transition-smooth ${
                 activeTab === 'disease'
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               🏥 Disease Information
@@ -128,7 +149,7 @@ const App = () => {
               className={`px-6 py-3 font-semibold rounded-lg transition-smooth ${
                 activeTab === 'testcase'
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : darkMode ? 'text-gray-300 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               🧪 Test Cases
@@ -138,7 +159,7 @@ const App = () => {
 
         {/* Tab Content */}
         <div className="animate-fade-in">
-          {activeTab === 'disease' ? <DiseaseLookup /> : <TestCaseForm />}
+          {activeTab === 'disease' ? <DiseaseLookup darkMode={darkMode} /> : <TestCaseForm darkMode={darkMode} />}
         </div>
       </main>
     </div>
