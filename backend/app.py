@@ -76,7 +76,7 @@ class TestCaseRequest(BaseModel):
     """Test case generation request"""
     requirement: str = Field(..., min_length=10, max_length=1000)
     system_type: str = Field(..., min_length=3, max_length=50)
-    priority: str = Field(..., regex="^(low|medium|high|critical)$")
+    priority: str = Field(..., pattern="^(low|medium|high|critical)$")
     compliance: List[str] = Field(default=["HIPAA"])
 
 class TestCase(BaseModel):
