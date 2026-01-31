@@ -125,18 +125,7 @@ class HealthTestAPI {
 
   // Chat with Gemini AI
   async chatWithGemini(message) {
-    const token = localStorage.getItem('access_token');
-    if (!token) throw new Error('No access token');
-    
-    const response = await this.client.post('/chat', 
-      { message },
-      {
-        headers: {
-          ...this.client.defaults.headers,
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    const response = await this.client.post('/chat', { message });
     return response.data;
   }
 }

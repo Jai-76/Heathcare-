@@ -17,7 +17,31 @@ const DiseaseLookup = () => {
     setSolutions('');
 
     try {
-      // For demonstration, provide mock responses
+      // Try to use the API first
+      const prompt = `As a medical AI assistant, provide comprehensive information about ${disease.trim()}. Include:
+1. Brief description of the disease
+2. Common symptoms
+3. Treatment options and solutions
+4. Prevention methods
+5. When to seek medical attention
+
+Please provide accurate, helpful information based on medical knowledge. If this is not a recognized medical condition, provide general health advice.`;
+
+      const response = await api.chatWithGemini(prompt);
+      const result = response.response || response.error || 'No response received from the server.';
+
+      setSolutions(result);
+      setSearchHistory(prev => [{
+        disease: disease.trim(),
+        result,
+        timestamp: new Date().toLocaleString()
+      }, ...prev.slice(0, 4)]); // Keep last 5 searches
+
+    } catch (err) {
+      // Fallback to mock data if API fails
+      console.error('API call failed, using fallback:', err);
+      setError('Unable to connect to the server. Using demo data instead.');
+
       const mockResponses = {
         'diabetes': `**Diabetes Mellitus**
 
@@ -99,13 +123,12 @@ const DiseaseLookup = () => {
       };
 
       const lowerDisease = disease.trim().toLowerCase();
-      let response = mockResponses[lowerDisease];
+      let fallbackResponse = mockResponses[lowerDisease];
 
-      if (!response) {
-        // Generic response for unknown diseases
-        response = `**${disease.trim()}**
+      if (!fallbackResponse) {
+        fallbackResponse = `**${disease.trim()}**
 
-**Note:** This is a demonstration response. For accurate medical information, please consult a healthcare professional.
+**Note:** Unable to connect to the AI service. This is demo information.
 
 **General Recommendations:**
 - Consult a qualified healthcare provider for proper diagnosis
@@ -116,16 +139,12 @@ const DiseaseLookup = () => {
 **Important:** This information is for educational purposes only and should not replace professional medical advice.`;
       }
 
-      setSolutions(response);
+      setSolutions(fallbackResponse);
       setSearchHistory(prev => [{
         disease: disease.trim(),
-        result: response,
+        result: fallbackResponse,
         timestamp: new Date().toLocaleString()
-      }, ...prev.slice(0, 4)]); // Keep last 5 searches
-
-    } catch (err) {
-      setError('Failed to get disease information. Please try again.');
-      console.error('Disease lookup error:', err);
+      }, ...prev.slice(0, 4)]);
     } finally {
       setLoading(false);
     }
