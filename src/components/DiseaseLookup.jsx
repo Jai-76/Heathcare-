@@ -160,65 +160,65 @@ Please provide accurate, helpful information based on medical knowledge. If this
   };
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Disease Information & Solutions</h2>
-        <p className="text-gray-600">Enter a disease name to get comprehensive information, symptoms, treatments, and solutions.</p>
-      </div>
+    <div className="card-premium">
+      <div className="p-8">
+        <div className="mb-8 animate-slide-up">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">Disease Information & Solutions</h2>
+          <p className="text-gray-600 text-lg">Enter a disease name to get comprehensive information, symptoms, treatments, and solutions powered by AI.</p>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Search Section */}
-        <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="mb-6">
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={disease}
-                onChange={(e) => setDisease(e.target.value)}
-                placeholder="Enter disease name (e.g., diabetes, hypertension, asthma)"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
-                required
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Searching...
-                  </div>
-                ) : (
-                  'Get Solutions'
-                )}
-              </button>
-            </div>
-          </form>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Search Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={disease}
+                  onChange={(e) => setDisease(e.target.value)}
+                  placeholder="Enter disease name (e.g., diabetes, hypertension, asthma)"
+                  className="input-field flex-1 text-base"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary px-8 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-r-transparent"></div>
+                      Searching...
+                    </>
+                  ) : (
+                    <>🔍 Search</>
+                  )}
+                </button>
+              </div>
+            </form>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <p className="text-sm text-red-600 font-medium">{error}</p>
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg animate-slide-down">
+              <div className="flex items-center gap-3">
+                <span className="text-red-600 text-xl">⚠️</span>
+                <div>
+                  <p className="font-medium text-red-900">Notice</p>
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Solutions Display */}
           {solutions && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <svg className="w-6 h-6 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <h3 className="text-xl font-semibold text-gray-900">Information for: {disease}</h3>
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-100 rounded-xl p-6 animate-slide-up">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-indigo-200">
+                <span className="text-2xl">📋</span>
+                <h3 className="text-2xl font-bold text-gray-900">Information for: <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{disease}</span></h3>
               </div>
               <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                <div className="whitespace-pre-wrap text-gray-700 leading-relaxed font-medium">
                   {solutions}
                 </div>
               </div>
@@ -227,14 +227,16 @@ Please provide accurate, helpful information based on medical knowledge. If this
         </div>
 
         {/* Search History Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-gray-50 rounded-lg p-4">
+        <div className="lg:col-span-1 space-y-6">
+          <div className="card-premium p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Searches</h3>
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <span>⏱️</span> Recent Searches
+              </h3>
               {searchHistory.length > 0 && (
                 <button
                   onClick={clearHistory}
-                  className="text-sm text-gray-500 hover:text-gray-700"
+                  className="text-xs font-medium text-gray-500 hover:text-red-600 transition-smooth px-2 py-1 hover:bg-red-50 rounded"
                 >
                   Clear
                 </button>
@@ -242,17 +244,17 @@ Please provide accurate, helpful information based on medical knowledge. If this
             </div>
 
             {searchHistory.length === 0 ? (
-              <p className="text-gray-500 text-sm">No recent searches</p>
+              <p className="text-gray-500 text-sm text-center py-6">No recent searches yet</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {searchHistory.map((item, index) => (
                   <div
                     key={index}
-                    className="bg-white p-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="bg-gradient-to-r from-indigo-50 to-purple-50 p-3 rounded-lg border border-indigo-100 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-smooth"
                     onClick={() => loadFromHistory(item)}
                   >
-                    <p className="font-medium text-gray-900 text-sm">{item.disease}</p>
-                    <p className="text-xs text-gray-500 mt-1">{item.timestamp}</p>
+                    <p className="font-semibold text-gray-900 text-sm">{item.disease}</p>
+                    <p className="text-xs text-gray-500 mt-1">🕐 {item.timestamp}</p>
                   </div>
                 ))}
               </div>
@@ -260,14 +262,16 @@ Please provide accurate, helpful information based on medical knowledge. If this
           </div>
 
           {/* Quick Search Suggestions */}
-          <div className="bg-blue-50 rounded-lg p-4 mt-4">
-            <h4 className="text-sm font-semibold text-blue-900 mb-3">Common Conditions</h4>
+          <div className="card-premium p-5 bg-gradient-to-br from-indigo-50 to-white border-indigo-200">
+            <h4 className="text-sm font-bold text-indigo-900 mb-4 flex items-center gap-2">
+              <span>⭐</span> Quick Conditions
+            </h4>
             <div className="space-y-2">
               {['Diabetes', 'Hypertension', 'Asthma', 'Migraine', 'Anxiety', 'Depression'].map((condition) => (
                 <button
                   key={condition}
                   onClick={() => setDisease(condition)}
-                  className="w-full text-left px-3 py-2 text-sm text-blue-700 hover:bg-blue-100 rounded-md transition-colors"
+                  className="w-full text-left px-3 py-2.5 text-sm font-medium text-indigo-700 bg-white hover:bg-indigo-100 rounded-lg transition-smooth border border-transparent hover:border-indigo-300"
                 >
                   {condition}
                 </button>

@@ -53,10 +53,13 @@ const App = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="text-center animate-slide-up">
+          <div className="inline-block">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600 mx-auto"></div>
+          </div>
+          <p className="mt-6 text-lg font-medium text-gray-700">Loading Healthcare AI Assistant...</p>
+          <p className="mt-2 text-sm text-gray-500">Please wait while we prepare your workspace</p>
         </div>
       </div>
     );
@@ -78,21 +81,25 @@ const App = () => {
 
   // Main authenticated application
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Healthcare AI Assistant</h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">✨</span>
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Healthcare AI</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
-                Welcome, {currentUser?.full_name || currentUser?.username || 'User'}
-              </span>
+            <div className="flex items-center space-x-6">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-medium text-gray-900">Welcome back</p>
+                <p className="text-xs text-indigo-600">{currentUser?.full_name || currentUser?.username || 'User'}</p>
+              </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-smooth focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 Logout
               </button>
@@ -102,37 +109,35 @@ const App = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
         {/* Tab Navigation */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('disease')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'disease'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Disease Information
-              </button>
-              <button
-                onClick={() => setActiveTab('testcase')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'testcase'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Test Case Generation
-              </button>
-            </nav>
+        <div className="mb-8 animate-slide-down">
+          <div className="flex space-x-2 bg-white rounded-xl p-1 shadow-sm inline-flex">
+            <button
+              onClick={() => setActiveTab('disease')}
+              className={`px-6 py-3 font-semibold rounded-lg transition-smooth ${
+                activeTab === 'disease'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              🏥 Disease Information
+            </button>
+            <button
+              onClick={() => setActiveTab('testcase')}
+              className={`px-6 py-3 font-semibold rounded-lg transition-smooth ${
+                activeTab === 'testcase'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              🧪 Test Cases
+            </button>
           </div>
         </div>
 
         {/* Tab Content */}
-        <div className="px-4 py-6 sm:px-0">
+        <div className="animate-fade-in">
           {activeTab === 'disease' ? <DiseaseLookup /> : <TestCaseForm />}
         </div>
       </main>
