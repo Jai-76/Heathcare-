@@ -40,35 +40,88 @@ Traceability Matrix – Links requirements to generated test cases.
 
 Integrations – Export or push test cases to enterprise QA tools.
 
-📂 Project Structure
-├── index.html        # Frontend interface with TailwindCSS
-├── script.js         # Core logic for test case generation
-├── styles.css        # Custom styling and UI components
-├── /assets           # Images, icons, mock diagrams
-└── README.md         # Documentation
+## 🏗️ Project Structure
+
+```
+healthcare-ai/
+├── index.html              # Main HTML entry point with SEO and performance optimizations
+├── src/
+│   ├── main.jsx           # React application entry point
+│   ├── App.jsx            # Main application component with routing
+│   ├── index.css          # Global styles and Tailwind imports
+│   ├── components/
+│   │   ├── DiseaseLookup.jsx    # AI-powered disease information component
+│   │   ├── TestCaseForm.jsx     # Healthcare test case generation
+│   │   ├── LoginPage.jsx        # User authentication
+│   │   └── SignupPage.jsx       # User registration
+│   └── services/
+│       └── api.js              # API client for backend communication
+├── backend/
+│   ├── main.py            # FastAPI backend server
+│   ├── database.py        # Database models and connection
+│   ├── auth.py            # Authentication utilities
+│   └── requirements.txt   # Python dependencies
+├── vite.config.js         # Vite build configuration
+├── tailwind.config.js     # Tailwind CSS configuration
+└── package.json           # Node.js dependencies and scripts
+```
 
 🖥️ Getting Started
-Prerequisites
 
-Node.js (for local development)
-Python 3.8+ (for backend API)
-A modern browser (Chrome, Firefox, Edge)
+## Prerequisites
 
-Backend Setup
+- Node.js 16+ (for frontend development)
+- Python 3.8+ (for backend API)
+- npm or yarn package manager
+- Modern browser (Chrome, Firefox, Edge, Safari)
 
+## Quick Start
+
+### Frontend Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+### Backend Setup (Optional - Frontend works with mock data)
+
+```bash
 # Navigate to backend directory
 cd backend
 
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
-# Create a .env file in the backend directory with:
+# Set up environment variables (optional)
+# Create a .env file with:
 # GEMINI_API_KEY=your_gemini_api_key_here
-# SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+# SECRET_KEY=your-secret-key-here
 # DATABASE_URL=sqlite:///./healthcare.db
 
-# The database will be created automatically when you first run the server
+# Start the backend server
+python -m uvicorn main:app --host localhost --port 8000
+```
+
+The backend API will be available at `http://localhost:8000`
+
+## 🚀 Available Scripts
+
+### Frontend Scripts
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+### Backend Scripts
+- `python main.py` - Run FastAPI server directly
+- `uvicorn main:app --reload` - Run with auto-reload
 
 # Start the FastAPI server
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
