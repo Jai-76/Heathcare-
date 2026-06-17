@@ -1,3 +1,5 @@
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Jai-76/Heathcare-)
+
 🏥 HealthTest AI – AI-Powered Healthcare Assistant
 
 HealthTest AI is an intelligent healthcare solution that provides comprehensive disease information, treatment solutions, and automated test case generation for healthcare software. It leverages AI, Natural Language Processing (NLP), and machine learning to analyze requirements, generate test cases, and provide medical information with compliance standards such as HIPAA, GDPR, FDA 21 CFR Part 11, and ISO 13485.
